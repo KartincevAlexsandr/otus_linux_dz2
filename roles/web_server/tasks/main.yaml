@@ -1,0 +1,27 @@
+---
+- name: "Update apt"
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+- name: "Install nginx"
+  become: true
+  apt:
+    name: nginx
+    state: latest
+  notify:
+    - start nginx systemd
+  tags:
+    - nginx-package
+    - packages
+
+- name: enable template nginx.conf
+  become: true
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+  tags:
+    - nginx-configuration
